@@ -1,76 +1,97 @@
-import React, { useEffect } from "react";
-import { BrowserRouter as Router, Routes, Route, Navigate, replace } from "react-router-dom";
-import { useAuthStore } from "./store/useAuthStore";
-import { useCartStore } from "./store/useCartStore";
-import AdminRoute from "./components/AdminRoute";
-import Cart from "./components/Cart";
-import Footer from "./components/Footer";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Header from "./components/Header";
+import Footer from "./components/Footer";
+
+import ProtectedRoute from "./components/ProtectedRoute";
+import AdminRoute from "./components/AdminRoute";
+
+import Home from "./pages/Home";
+import Products from "./pages/Products";
+import ProductDetail from "./pages/ProductDetail";
+
 import Login from "./components/Login";
 import Register from "./components/Register";
-import ProtectedRoute from "./components/ProtectedRoute";
+import Cart from "./components/Cart";
+import Checkout from "./pages/Checkout";
+import OrderHistory from "./pages/OrderHistory";
+
 import AdminDashboard from "./pages/admin/AdminDashboard";
-import AdminOrders from "./pages/admin/AdminOrders";
 import AdminProducts from "./pages/admin/AdminProducts";
 import AdminUsers from "./pages/admin/AdminUsers";
-import EmailVerification from "./pages/EmailVerification";
+import AdminOrders from "./pages/admin/AdminOrders";
+
 import ForgotPassword from "./pages/ForgotPassword";
-import Home from "./pages/Home";
-import NoEncontrado from "./pages/NoEncontrado";
-import OrderHistory from "./pages/OrderHistory";
-import ProductDetail from "./pages/ProductDetail";
-import Products from "./pages/Products";
 import ResetPassword from "./pages/ResetPassword";
+import EmailVerification from "./pages/EmailVerification";
+import NoEncontrado from "./pages/NoEncontrado";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-
-function App() {
-  
-  const { user } = useAuthStore();
-  const setUserCart = useCartStore((state) => state.setUser);
-
-  useEffect(() => {
-    setUserCart(user ? user.id : null);
-  }, [user, setUserCart]);
-
-
+export default function App() {
   return (
-    <Router>
-      <div className="flex-grow container mx-auto px-4 py-8"><ToastContainer /></div>
-      
+    <div className="min-h-screen flex flex-col bg-white text-gray-900 dark:bg-zinc-950 dark:text-zinc-100">
+      <BrowserRouter>
+        <Header />
 
+        <ToastContainer
+          position="top-right"
+          autoClose={2200}
+          hideProgressBar={false}
+          newestOnTop
+          closeOnClick
+          pauseOnHover
+          draggable
+          theme="colored"
+        />
 
-      <Header />
-      <Cart />
-      
-      <main className="">
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/products" element={<Products />} />
-          <Route path="/products/:id" element={<ProductDetail />} />
-           <Route path="/orders" element={<ProtectedRoute><OrderHistory/></ProtectedRoute> } />
-          <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
-          <Route path="index" element={<Navigate to="/admin/products" replace />} />
-          <Route path="products" element={<AdminProducts />} />
-          <Route path="users" element={<AdminUsers />} />
-          <Route path="orders" element={<AdminOrders />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/reset-password/:token" element={<ResetPassword />} />
-          <Route path="/forgot-password" element={<ForgotPassword />} />
-          <Route path="/verify-email" element={<EmailVerification />} />
-          <Route path="*" element={<NoEncontrado/>}/>
-          
-         
-        </Routes>
-      </main>
+        {/* main que ocupa el espacio y empuja el footer abajo */}
+        <main className="flex-1">
+          <div className="max-w-6xl mx-auto px-4 py-8">
+            <Routes>
+              {/* Públicas */}
+              <Route path="/" element={<Home />} />
+              <Route path="/products" element={<Products />} />
+              <Route path="/product/:id" element={<ProductDetail />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
 
-      
-      <CartDrawer />
+              {/* Recuperación / verificación */}
+              <Route path="/forgot-password" element={<ForgotPassword />} />
+              <Route
+                path="/reset-password/:token"
+                element={<ResetPassword />}
+              />
 
-      <Footer />
-    </Router>
+              <Route path="/verify-email" element={<EmailVerification />} />
+              <Route
+                path="/verify-email/:token"
+                element={<EmailVerification />}
+              />
+
+              {/* Carrito */}
+              <Route path="/cart" element={<Cart />} />
+
+              {/* Privadas */}
+              <Route element={<ProtectedRoute />}>
+                <Route path="/orders" element={<OrderHistory />} />
+                <Route path="/checkout" element={<Checkout />} />
+              </Route>
+
+              {/* Admin */}
+              <Route element={<AdminRoute />}>
+                <Route path="/admin" element={<AdminDashboard />} />
+                <Route path="/admin/products" element={<AdminProducts />} />
+                <Route path="/admin/users" element={<AdminUsers />} />
+                <Route path="/admin/orders" element={<AdminOrders />} />
+              </Route>
+
+              <Route path="*" element={<NoEncontrado />} />
+            </Routes>
+          </div>
+        </main>
+
+        <Footer />
+      </BrowserRouter>
+    </div>
   );
 }
-export default App;

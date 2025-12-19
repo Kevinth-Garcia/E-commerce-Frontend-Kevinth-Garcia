@@ -1,16 +1,132 @@
-# React + Vite
+# 🛒 Frontend – Friki Mundo
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Frontend desarrollado como parte del **Trabajo Final Integrador** del Bootcamp **Full Stack Engineer**, utilizando **React** y **Vite**, conectado a un backend en **Node.js + Express + MongoDB** (MERN), implementando carrito persistente, autenticación, rutas protegidas, panel de administración y checkout funcional.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 📌 Tecnologías Utilizadas
 
-## React Compiler
+- React
+- Vite
+- React Router DOM
+- Zustand (State Management)
+- Tailwind CSS
+- Axios
+- React Toastify
+- JavaScript (ES6+)
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+---
 
-## Expanding the ESLint configuration
+## 🎨 Interfaz y Experiencia de Usuario
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+El frontend incluye:
+
+- Diseño moderno y responsive
+- **Modo claro / oscuro** con persistencia
+- Feedback visual con **notificaciones Toast**
+- Navegación fluida mediante **SPA (Single Page Application)**
+
+---
+
+## 🔐 Autenticación y Roles
+
+El sistema maneja:
+
+- Registro y login de usuarios
+- Persistencia de sesión mediante **JWT**
+- Protección de rutas privadas
+- Diferenciación de roles:
+  - Usuario
+  - Administrador
+- Renderizado condicional del menú según rol (Admin / Usuario)
+
+---
+
+## 🛍️ Funcionalidades Principales
+
+### 📦 Productos
+- Listado de productos desde el backend
+- Vista de detalle del producto
+- Selector de cantidad
+- Agregado al carrito con feedback visual (Toast)
+
+---
+
+### 🛒 Carrito de Compras
+- Carrito persistente (localStorage)
+- Incrementar / disminuir cantidad
+- Eliminar productos
+- Vaciar carrito con confirmación interna
+- Cálculo automático de total
+- Indicador de cantidad en el Header
+
+---
+
+### 💳 Checkout
+- Creación de orden real en el backend
+- Envío del token JWT en la petición
+- Limpieza automática del carrito al confirmar compra
+- Feedback visual de éxito o error
+
+---
+
+### 🧾 Historial de Órdenes
+- Vista de órdenes del usuario autenticado
+- Despliegue de detalles por orden
+- Cálculo de totales y subtotales
+- Búsqueda por ID o producto
+- Interfaz sin componentes extra (requisito del TP)
+
+---
+
+### 👑 Panel de Administración
+Disponible solo para usuarios con rol **Admin**:
+
+- Acceso desde el Header
+- Gestión de productos
+- Gestión de usuarios
+- Visualización de órdenes globales
+
+---
+
+## 🧠 Manejo de Estado (Zustand)
+
+Se utilizaron stores independientes para:
+
+- `useAuthStore` → autenticación y usuario
+- `useCartStore` → carrito de compras
+- `useThemeStore` → modo claro / oscuro
+
+Con persistencia en:
+- `localStorage`
+- `sessionStorage`
+
+---
+
+## 🌐 Comunicación con Backend
+
+- Axios centralizado (`services/api.js`)
+- Interceptores para enviar el token JWT
+- Manejo de errores desde la UI
+- Endpoints consumidos:
+  - Auth
+  - Products
+  - Orders
+  - Users (Admin)
+
+---
+
+## 🧪 Validaciones
+
+- Validaciones en formularios (registro, login)
+- Confirmación de contraseña
+- Mensajes de error claros al usuario
+- Validación visual de estados (loading, empty, error)
+
+---
+
+## ⚙️ Instalación y Ejecución
+
+```bash
+npm install
+npm run dev

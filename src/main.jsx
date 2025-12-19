@@ -1,10 +1,22 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import './index.css'
-import App from './App.jsx'
+import React, { useEffect } from "react";
+import ReactDOM from "react-dom/client";
+import App from "./App.jsx";
+import "./index.css";
+import { useThemeStore } from "./store/useThemeStore";
 
-ReactDOM.createRoot(document.getElementById('root')).render(
-  <StrictMode>
-    <App />
-  </StrictMode>,
-)
+function ThemeSync() {
+  const theme = useThemeStore((s) => s.theme);
+
+  useEffect(() => {
+    // Tailwind dark mode por clase
+    document.documentElement.classList.toggle("dark", theme === "dark");
+  }, [theme]);
+
+  return <App />;
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(
+  <React.StrictMode>
+    <ThemeSync />
+  </React.StrictMode>
+);
