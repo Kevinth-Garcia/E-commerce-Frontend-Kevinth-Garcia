@@ -12,7 +12,7 @@ export default function AdminUsers() {
   const load = async () => {
     setLoading(true);
     try {
-      const res = await api.get("/users"); // ruta
+      const res = await api.get("/users/admin/all"); // ruta
       setUsers(Array.isArray(res.data?.data) ? res.data.data : []);
     } catch (e) {
       toast.error(e?.response?.data?.message || "Error al obtener usuarios");
@@ -29,7 +29,7 @@ export default function AdminUsers() {
     try {
       const next = !u.isAdmin;
 
-      const res = await api.put(`/users/admin/all${u._id}`, { isAdmin: next }); // PUT
+      const res = await api.put(`auth/admin/users${u._id}`, { isAdmin: next }); // PUT
       const updated = res.data?.data;
 
       setUsers((prev) => prev.map((x) => (x._id === u._id ? updated : x)));
