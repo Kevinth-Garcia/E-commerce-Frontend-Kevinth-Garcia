@@ -73,7 +73,7 @@ export default function Home() {
           <div>
             <h2 className="text-xl font-extrabold">Productos destacados</h2>
             <p className="text-sm opacity-80">
-              Una selección para que no empieces con la tienda vacía.
+              Los mas comprados de este mes.
             </p>
           </div>
 
