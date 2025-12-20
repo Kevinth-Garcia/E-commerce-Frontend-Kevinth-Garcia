@@ -5,8 +5,6 @@ import api from "../services/api";
 import { useCartStore } from "../store/useCartStore";
 import { useAuthStore } from "../store/useAuthStore";
 
-//checkout de compra en la tienda
-
 export default function Checkout() {
   const nav = useNavigate();
 
@@ -19,12 +17,23 @@ export default function Checkout() {
   const [loading, setLoading] = useState(false);
 
   const confirmar = async () => {
-    if (!items.length) return;
+    if (loading) return;
+
+    if (!token) {
+      toast.info("Debes iniciar sesión para completar la compra.");
+      nav("/login", { replace: true });
+      return;
+    }
+
+    if (!items.length) {
+      toast.info("Tu carrito está vacío.");
+      nav("/products", { replace: true });
+      return;
+    }
+
+    setLoading(true);
 
     try {
-      setLoading(true);
-
-      // productos: [{ id, nombre, precio, cantidad }], total
       const payload = {
         productos: items.map((i) => ({
           id: i.id,
@@ -35,18 +44,43 @@ export default function Checkout() {
         total: total(),
       };
 
+      // ✅ evita “Procesando…” infinito (Render / email / colgado)
+      const controller = new AbortController();
+      const timeoutMs = 15000; // 15s
+      const timer = setTimeout(() => controller.abort(), timeoutMs);
+
       const res = await api.post("/orders", payload, {
         headers: { Authorization: `Bearer ${token}` },
+        signal: controller.signal,
       });
 
-      toast.success(res.data?.message || "Orden creada ✅");
+      clearTimeout(timer);
+
+      toast.success(res.data?.message || "Compra exitosa ✅");
       clear();
-      nav("/orders", { replace: true });
+
+      // ✅ redirigir al catálogo
+      nav("/products", { replace: true });
     } catch (e) {
+      const aborted =
+        e?.name === "AbortError" ||
+        e?.code === "ERR_CANCELED" ||
+        e?.name === "CanceledError";
+
+      const status = e?.response?.status;
       const msg =
-        e?.response?.data?.message || e.message || "Error creando la orden";
-      toast.error(msg);
+        e?.response?.data?.message ||
+        (aborted
+          ? "El servidor tardó demasiado. Intenta de nuevo (puede estar despertando)."
+          : e?.message || "Error creando la orden");
+
+      toast.error(`Error${status ? ` (${status})` : ""}: ${msg}`);
       console.error("Checkout error:", e?.response?.data || e);
+
+      // Si el token expiró / inválido → mandar a login
+      if (status === 401 || status === 403) {
+        nav("/login", { replace: true });
+      }
     } finally {
       setLoading(false);
     }
@@ -64,10 +98,15 @@ export default function Checkout() {
       <button
         disabled={!items.length || loading}
         onClick={confirmar}
-        className="mt-6 w-full px-4 py-3 rounded-2xl bg-black text-white font-semibold disabled:opacity-50"
+        className="mt-6 w-full px-4 py-3 rounded-2xl bg-black text-white font-semibold disabled:opacity-50 active:scale-[0.99]"
       >
         {loading ? "Procesando..." : "Confirmar compra"}
       </button>
+
+      <p className="mt-3 text-xs opacity-70">
+        *Si es la primera compra en Render, puede tardar unos segundos en
+        responder.
+      </p>
     </div>
   );
 }
