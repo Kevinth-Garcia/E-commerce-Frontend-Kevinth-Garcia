@@ -12,7 +12,7 @@ export default function AdminUsers() {
   const load = async () => {
     setLoading(true);
     try {
-      const res = await api.get("/users"); // ruta
+      const res = await api.get("/admin/users"); // ruta
       setUsers(Array.isArray(res.data?.data) ? res.data.data : []);
     } catch (e) {
       toast.error(e?.response?.data?.message || "Error al obtener usuarios");
@@ -29,7 +29,7 @@ export default function AdminUsers() {
     try {
       const next = !u.isAdmin;
 
-      const res = await api.put(`/users/${u._id}`, { isAdmin: next }); // PUT
+      const res = await api.put(`/admin/users/${u._id}`, { isAdmin: next }); // PUT
       const updated = res.data?.data;
 
       setUsers((prev) => prev.map((x) => (x._id === u._id ? updated : x)));
@@ -47,7 +47,7 @@ export default function AdminUsers() {
     if (!confirmDelete) return;
 
     try {
-      await api.delete(`/users/${confirmDelete._id}`); // DELETE
+      await api.delete(`/admin/users${confirmDelete._id}`); // DELETE
       setUsers((prev) => prev.filter((x) => x._id !== confirmDelete._id));
       toast.success("Usuario eliminado ✅");
       setConfirmDelete(null);

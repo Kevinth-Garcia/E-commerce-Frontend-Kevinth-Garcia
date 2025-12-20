@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import api from "../services/api";
 import ProductCard from "../components/ProductCard";
+import Coolmemepng from "../static/Coolmeme.png";
 
 export default function Home() {
   const [featured, setFeatured] = useState([]);
@@ -12,7 +13,6 @@ export default function Home() {
       try {
         const res = await api.get("/products");
         const list = Array.isArray(res.data?.data) ? res.data.data : [];
-        // destacados: primeros 4
         setFeatured(list.slice(0, 4));
       } catch (e) {
         setFeatured([]);
@@ -58,9 +58,10 @@ export default function Home() {
           {/* IMAGEN */}
           <div className="hidden md:flex justify-center">
             <img
-              src="src\static\Coolmeme.png"
-              alt="Friki Mundo destacados"
+              src={Coolmemepng}
+              alt="Cool meme"
               className="w-72 mx-auto animate-float drop-shadow-2xl"
+              loading="lazy"
             />
           </div>
         </div>
