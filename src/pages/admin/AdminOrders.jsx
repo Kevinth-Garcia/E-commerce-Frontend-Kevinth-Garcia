@@ -54,7 +54,7 @@ export default function AdminOrders() {
   const doDelete = async () => {
     if (!confirmDelete) return;
     try {
-      await api.delete(`/orderRoutes/${confirmDelete._id}`);
+      await api.delete(`/orders/${confirmDelete._id}`);
       setOrders((prev) => prev.filter((o) => o._id !== confirmDelete._id));
       toast.success("Orden eliminada ✅");
       setConfirmDelete(null);

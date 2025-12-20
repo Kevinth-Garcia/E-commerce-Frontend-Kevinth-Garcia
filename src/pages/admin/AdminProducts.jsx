@@ -64,13 +64,13 @@ export default function AdminProducts() {
 
     try {
       if (editingId) {
-        await api.put(`/productRoutes/${editingId}`, {
+        await api.put(`/products/${editingId}`, {
           ...form,
           precio: precioNum,
         });
         toast.success("Producto actualizado ✅");
       } else {
-        await api.post("/productRoutes", { ...form, precio: precioNum });
+        await api.post("/products", { ...form, precio: precioNum });
         toast.success("Producto creado ✅");
       }
       cancelEdit();
@@ -83,7 +83,7 @@ export default function AdminProducts() {
   const remove = async (id) => {
     if (!confirm("¿Eliminar producto?")) return;
     try {
-      await api.delete(`/productRoutes/${id}`);
+      await api.delete(`/products/${id}`);
       toast.success("Producto eliminado ✅");
       setItems((prev) => prev.filter((p) => p.id !== id));
     } catch (e) {
