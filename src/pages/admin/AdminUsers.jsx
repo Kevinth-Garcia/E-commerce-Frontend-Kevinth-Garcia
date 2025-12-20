@@ -29,7 +29,7 @@ export default function AdminUsers() {
     try {
       const next = !u.isAdmin;
 
-      const res = await api.put(`auth/admin/users${u._id}`, { isAdmin: next }); // PUT
+      const res = await api.put(`/users/${u._id}`, { isAdmin: next }); // PUT
       const updated = res.data?.data;
 
       setUsers((prev) => prev.map((x) => (x._id === u._id ? updated : x)));
