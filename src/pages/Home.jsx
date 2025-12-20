@@ -10,7 +10,7 @@ export default function Home() {
   useEffect(() => {
     (async () => {
       try {
-        const res = await api.get("/productRoutes");
+        const res = await api.get("/products");
         const list = Array.isArray(res.data?.data) ? res.data.data : [];
         // destacados: primeros 4
         setFeatured(list.slice(0, 4));

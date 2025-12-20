@@ -20,7 +20,7 @@ export default function OrderHistory() {
       setError("");
       try {
         // backend: /api/orderRoutes
-        const res = await api.get("/orderRoutes");
+        const res = await api.get("/orders");
         const list = Array.isArray(res.data?.data) ? res.data.data : [];
         setOrders(list);
       } catch (e) {

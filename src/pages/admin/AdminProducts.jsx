@@ -24,7 +24,7 @@ export default function AdminProducts() {
   const load = async () => {
     setLoading(true);
     try {
-      const res = await api.get("/productRoutes");
+      const res = await api.get("/products");
       setItems(Array.isArray(res.data?.data) ? res.data.data : []);
     } catch (e) {
       toast.error(e?.response?.data?.message || "Error cargando productos");
