@@ -13,7 +13,7 @@ export default function Products() {
     const load = async () => {
       try {
         setError("");
-        const res = await api.get("/productRoutes");
+        const res = await api.get("/products");
         const list = Array.isArray(res.data?.data) ? res.data.data : [];
         setProducts(list);
       } catch (e) {
