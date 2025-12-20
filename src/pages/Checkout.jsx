@@ -35,7 +35,7 @@ export default function Checkout() {
         total: total(),
       };
 
-      const res = await api.post("/orderRoutes", payload, {
+      const res = await api.post("/orders", payload, {
         headers: { Authorization: `Bearer ${token}` },
       });
 

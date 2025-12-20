@@ -15,7 +15,7 @@ export default function ProductDetail() {
   useEffect(() => {
     (async () => {
       try {
-        const res = await api.get(`/productRoutes/${id}`);
+        const res = await api.get(`/products/${id}`);
         setProduct(res.data?.data || res.data);
       } catch {
         toast.error("Producto no encontrado");
