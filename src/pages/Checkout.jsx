@@ -12,7 +12,6 @@ export default function Checkout() {
   const total = useCartStore((s) => s.total);
   const clear = useCartStore((s) => s.clear);
 
-  const isAuthed = useAuthStore((s) => s.isAuthenticated);
   const token = useAuthStore((s) => s.token);
 
   const [loading, setLoading] = useState(false);
@@ -20,8 +19,8 @@ export default function Checkout() {
   const confirmar = async () => {
     if (!items.length) return;
 
-    // ✅ si no está logueado, mandas a login
-    if (!isAuthed || !token) {
+    // ✅ si no está logueado, no intentes crear orden
+    if (!token) {
       toast.info("Inicia sesión para finalizar la compra.");
       nav("/login");
       return;
@@ -30,40 +29,44 @@ export default function Checkout() {
     try {
       setLoading(true);
 
+      // ✅ idempotencia para evitar duplicados si hay retry/timeout
+      const clientOrderId =
+        typeof crypto !== "undefined" && crypto.randomUUID
+          ? crypto.randomUUID()
+          : `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+
+      // ✅ payload compatible con tu orderRoutes + nuevo schema
       const payload = {
+        clientOrderId,
         productos: items.map((i) => ({
-          id: i.id,
-          nombre: i.title, // ✅ quieres nombre
+          id: String(i.id),
+          nombre: i.title, // mostrar nombre real
           precio: Number(i.price) || 0,
           cantidad: Number(i.qty) || 1,
         })),
-        total: total(),
+        total: Number(total()) || 0,
       };
 
-      // ✅ OJO: tu interceptor ya mete el token
-      // pero lo dejamos igual por claridad (puedes quitar headers si quieres)
+      // interceptor ya mete Authorization, pero igual no estorba
       const res = await api.post("/orders", payload, {
-        headers: { Authorization: `Bearer ${token}` },
-        timeout: 15000, // ✅ para que no se quede "Procesando..." infinito
+        timeout: 45000, // Render a veces tarda en la primera request
       });
 
-      // ✅ tu backend responde: { success, message, data }
       if (res.data?.success !== true) {
         throw new Error(res.data?.message || "No se pudo crear la orden");
       }
 
       toast.success(res.data?.message || "Compra confirmada ✅");
 
-      // ✅ limpiamos si fue éxito
+      // ✅ solo borra si fue OK
       clear();
 
-      // ✅ redirigir al catálogo (como pediste)
+      // ✅ vuelve al catálogo
       nav("/products", { replace: true });
     } catch (e) {
       const msg =
         e?.response?.data?.message || e?.message || "Error creando la orden";
 
-      // ✅ NO limpiamos carrito si falla
       toast.error(msg);
       console.error("Checkout error:", e?.response?.data || e);
     } finally {
@@ -77,22 +80,18 @@ export default function Checkout() {
 
       <div className="mt-4 space-y-2">
         <p className="text-sm opacity-80">Items: {items.length}</p>
-        <p className="text-lg font-bold">Total: ${total()}</p>
+        <p className="text-lg font-bold">
+          Total: ${Number(total()).toFixed(2)}
+        </p>
       </div>
 
       <button
         disabled={!items.length || loading}
         onClick={confirmar}
-        className="mt-6 w-full px-4 py-3 rounded-2xl bg-black text-white dark:bg-white dark:text-black font-semibold disabled:opacity-50"
+        className="mt-6 w-full px-4 py-3 rounded-2xl bg-black text-white font-semibold disabled:opacity-50"
       >
         {loading ? "Procesando..." : "Confirmar compra"}
       </button>
-
-      {!isAuthed && (
-        <p className="mt-3 text-sm opacity-70">
-          Para finalizar la compra debes iniciar sesión.
-        </p>
-      )}
     </div>
   );
 }
