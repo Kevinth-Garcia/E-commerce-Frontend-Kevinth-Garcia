@@ -19,7 +19,7 @@ export default function Checkout() {
   const confirmar = async () => {
     if (!items.length) return;
 
-    // ✅ si no está logueado, no intentes crear orden
+    // si no está logueado, no intentes crear orden
     if (!token) {
       toast.info("Inicia sesión para finalizar la compra.");
       nav("/login");
@@ -29,13 +29,13 @@ export default function Checkout() {
     try {
       setLoading(true);
 
-      // ✅ idempotencia para evitar duplicados si hay retry/timeout
+      // idempotencia para evitar duplicados si hay retry/timeout
       const clientOrderId =
         typeof crypto !== "undefined" && crypto.randomUUID
           ? crypto.randomUUID()
           : `${Date.now()}-${Math.random().toString(16).slice(2)}`;
 
-      // ✅ payload compatible con tu orderRoutes + nuevo schema
+      // payload compatible con tu orderRoutes + nuevo schema
       const payload = {
         clientOrderId,
         productos: items.map((i) => ({
@@ -58,10 +58,10 @@ export default function Checkout() {
 
       toast.success(res.data?.message || "Compra confirmada ✅");
 
-      // ✅ solo borra si fue OK
+      // solo borra si fue OK
       clear();
 
-      // ✅ vuelve al catálogo
+      // vuelve al catálogo
       nav("/products", { replace: true });
     } catch (e) {
       const msg =

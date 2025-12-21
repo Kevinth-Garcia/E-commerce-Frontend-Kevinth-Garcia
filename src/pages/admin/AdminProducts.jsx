@@ -30,7 +30,7 @@ export default function AdminProducts() {
   const load = async () => {
     setLoading(true);
     try {
-      // ✅ GET /api/products
+      // GET /api/products
       const res = await api.get("/products");
       setItems(Array.isArray(res.data?.data) ? res.data.data : []);
     } catch (e) {
@@ -85,7 +85,7 @@ export default function AdminProducts() {
 
     try {
       if (editingId) {
-        // ✅ PUT /api/products/:id
+        // PUT /api/products/:id
         await api.put(`/products/${editingId}`, {
           nombre,
           descripcion,
@@ -94,7 +94,7 @@ export default function AdminProducts() {
         });
         toast.success("Producto actualizado ✅");
       } else {
-        // ✅ POST /api/products
+        // POST /api/products
         await api.post("/products", {
           nombre,
           descripcion,
@@ -120,7 +120,7 @@ export default function AdminProducts() {
     if (!id) return toast.error("ID de producto inválido");
 
     try {
-      // ✅ DELETE /api/products/:id
+      // DELETE /api/products/:id
       await api.delete(`/products/${id}`);
       toast.success("Producto eliminado ✅");
 
@@ -174,7 +174,7 @@ export default function AdminProducts() {
             <div className="p-4 opacity-80">No hay productos.</div>
           ) : (
             <>
-              {/* ✅ MOBILE: cards */}
+              {/* MOBILE: cards */}
               <div className="sm:hidden divide-y dark:divide-zinc-800">
                 {filtered.map((p) => {
                   const id = getId(p);
@@ -222,7 +222,7 @@ export default function AdminProducts() {
                 })}
               </div>
 
-              {/* ✅ DESKTOP: tabla */}
+              {/* DESKTOP: tabla */}
               <div className="hidden sm:block overflow-x-auto">
                 <table className="min-w-[900px] w-full text-sm">
                   <thead className="text-left">
@@ -293,7 +293,7 @@ export default function AdminProducts() {
           )}
         </div>
 
-        {/* ✅ Confirm delete inline (sin confirm()) */}
+        {/* Confirm delete inline (sin confirm()) */}
         {confirmDelete && (
           <div className="rounded-2xl border border-red-200 bg-red-50 p-4 dark:border-red-900 dark:bg-red-950/30">
             <p className="text-sm">

@@ -1,5 +1,7 @@
 import { Link } from "react-router-dom";
 
+//Panel de admin para editar ordenes,productos,usuarios
+
 export default function AdminDashboard() {
   const Card = ({ title, desc, to }) => (
     <Link

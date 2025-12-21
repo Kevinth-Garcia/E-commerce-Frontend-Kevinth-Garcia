@@ -57,7 +57,7 @@ export const useAuthStore = create(
         isAuthenticated: s.isAuthenticated,
       }),
 
-      // ✅ cuando se rehidrata desde sessionStorage, setea isAuthenticated
+      //  cuando se rehidrata desde sessionStorage, setea isAuthenticated
       onRehydrateStorage: () => (state) => {
         if (!state) return;
         state.isAuthenticated = Boolean(state.token);

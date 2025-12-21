@@ -2,6 +2,8 @@ import { Link } from "react-router-dom";
 import { useCartStore } from "../store/useCartStore";
 import { toast } from "react-toastify";
 
+//Template de tarjeta de presentacion de productos
+
 export default function ProductCard({ p }) {
   const addItem = useCartStore((s) => s.addItem);
 

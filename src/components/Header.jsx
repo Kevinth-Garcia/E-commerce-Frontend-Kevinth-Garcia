@@ -4,6 +4,8 @@ import { useCartStore } from "../store/useCartStore";
 import { useAuthStore } from "../store/useAuthStore";
 import { useThemeStore } from "../store/useThemeStore";
 
+//Header de stictky para front con cambio a menu hamburguesa cuando pasa a pantalla de mobiles
+
 export default function Header() {
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);

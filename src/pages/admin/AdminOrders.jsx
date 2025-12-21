@@ -2,6 +2,9 @@ import React, { useEffect, useMemo, useState } from "react";
 import api from "../../services/api";
 import { toast } from "react-toastify";
 
+//pestana de admin para gestionar ordenes 
+//con grilla para ver los detalles
+
 export default function AdminOrders() {
   const [loading, setLoading] = useState(true);
   const [orders, setOrders] = useState([]);
