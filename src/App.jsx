@@ -63,10 +63,6 @@ export default function App() {
               />
 
               <Route path="/verify-email" element={<EmailVerification />} />
-              <Route
-                path="/verify-email/:token"
-                element={<EmailVerification />}
-              />
 
               {/* Carrito */}
               <Route path="/cart" element={<Cart />} />

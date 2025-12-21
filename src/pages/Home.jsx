@@ -24,9 +24,9 @@ export default function Home() {
 
   return (
     <div className="space-y-10">
-      {/* HERO centrado */}
+      {/* HERO */}
       <section className="rounded-3xl border dark:border-zinc-800 bg-white dark:bg-zinc-900 overflow-hidden">
-        <div className="grid md:grid-cols-2 gap-6 items-center p-8 md:p-12">
+        <div className="grid md:grid-cols-2 gap-8 items-center p-6 sm:p-8 md:p-12">
           {/* TEXTO */}
           <div>
             <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight">
@@ -56,11 +56,11 @@ export default function Home() {
           </div>
 
           {/* IMAGEN */}
-          <div className="grid md:grid-cols-2 gap-6 items-center">
+          <div className="flex justify-center md:justify-end">
             <img
               src={Coolmemepng}
               alt="Cool meme"
-              className="w-64 sm:w-72 md:w-80 mx-auto animate-float drop-shadow-2xl"
+              className="w-56 sm:w-64 md:w-80 mx-auto animate-float drop-shadow-2xl"
               loading="lazy"
             />
           </div>
@@ -72,7 +72,7 @@ export default function Home() {
         <div className="flex items-end justify-between gap-3">
           <div>
             <h2 className="text-xl font-extrabold">Productos destacados</h2>
-            <p className="text-sm opacity-80">Los mas comprados de este mes.</p>
+            <p className="text-sm opacity-80">Los más comprados de este mes.</p>
           </div>
 
           <Link
@@ -92,7 +92,7 @@ export default function Home() {
             No hay productos para mostrar.
           </div>
         ) : (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {featured.map((p) => (
               <ProductCard key={p.id} p={p} />
             ))}
