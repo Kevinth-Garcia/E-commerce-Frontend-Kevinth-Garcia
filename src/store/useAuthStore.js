@@ -23,8 +23,13 @@ export const useAuthStore = create(
         return res.data;
       },
 
-      register: async (payload) => {
-        const res = await api.post("/auth/register", payload);
+      register: async ({ nombre, apellido, email, password }) => {
+        const res = await api.post("/auth/register", {
+          nombre,
+          apellido,
+          email,
+          password,
+        });
         return res.data;
       },
 
