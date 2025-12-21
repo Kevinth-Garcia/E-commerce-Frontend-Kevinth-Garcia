@@ -46,7 +46,7 @@ export default function App() {
 
         {/* main que ocupa el espacio y empuja el footer abajo */}
         <main className="flex-1">
-          <div className="max-w-6xl mx-auto px-4 py-8">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
             <Routes>
               {/* Públicas */}
               <Route path="/" element={<Home />} />

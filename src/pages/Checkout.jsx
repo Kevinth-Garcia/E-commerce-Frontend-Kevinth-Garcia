@@ -12,75 +12,60 @@ export default function Checkout() {
   const total = useCartStore((s) => s.total);
   const clear = useCartStore((s) => s.clear);
 
+  const isAuthed = useAuthStore((s) => s.isAuthenticated);
   const token = useAuthStore((s) => s.token);
 
   const [loading, setLoading] = useState(false);
 
   const confirmar = async () => {
-    if (loading) return;
+    if (!items.length) return;
 
-    if (!token) {
-      toast.info("Debes iniciar sesión para completar la compra.");
-      nav("/login", { replace: true });
+    // ✅ si no está logueado, mandas a login
+    if (!isAuthed || !token) {
+      toast.info("Inicia sesión para finalizar la compra.");
+      nav("/login");
       return;
     }
-
-    if (!items.length) {
-      toast.info("Tu carrito está vacío.");
-      nav("/products", { replace: true });
-      return;
-    }
-
-    setLoading(true);
 
     try {
+      setLoading(true);
+
       const payload = {
         productos: items.map((i) => ({
           id: i.id,
-          nombre: i.title,
-          precio: i.price,
-          cantidad: i.qty,
+          nombre: i.title, // ✅ quieres nombre
+          precio: Number(i.price) || 0,
+          cantidad: Number(i.qty) || 1,
         })),
         total: total(),
       };
 
-      // ✅ evita “Procesando…” infinito (Render / email / colgado)
-      const controller = new AbortController();
-      const timeoutMs = 15000; // 15s
-      const timer = setTimeout(() => controller.abort(), timeoutMs);
-
+      // ✅ OJO: tu interceptor ya mete el token
+      // pero lo dejamos igual por claridad (puedes quitar headers si quieres)
       const res = await api.post("/orders", payload, {
         headers: { Authorization: `Bearer ${token}` },
-        signal: controller.signal,
+        timeout: 15000, // ✅ para que no se quede "Procesando..." infinito
       });
 
-      clearTimeout(timer);
+      // ✅ tu backend responde: { success, message, data }
+      if (res.data?.success !== true) {
+        throw new Error(res.data?.message || "No se pudo crear la orden");
+      }
 
-      toast.success(res.data?.message || "Compra exitosa ✅");
+      toast.success(res.data?.message || "Compra confirmada ✅");
+
+      // ✅ limpiamos si fue éxito
       clear();
 
-      // ✅ redirigir al catálogo
+      // ✅ redirigir al catálogo (como pediste)
       nav("/products", { replace: true });
     } catch (e) {
-      const aborted =
-        e?.name === "AbortError" ||
-        e?.code === "ERR_CANCELED" ||
-        e?.name === "CanceledError";
-
-      const status = e?.response?.status;
       const msg =
-        e?.response?.data?.message ||
-        (aborted
-          ? "El servidor tardó demasiado. Intenta de nuevo (puede estar despertando)."
-          : e?.message || "Error creando la orden");
+        e?.response?.data?.message || e?.message || "Error creando la orden";
 
-      toast.error(`Error${status ? ` (${status})` : ""}: ${msg}`);
+      // ✅ NO limpiamos carrito si falla
+      toast.error(msg);
       console.error("Checkout error:", e?.response?.data || e);
-
-      // Si el token expiró / inválido → mandar a login
-      if (status === 401 || status === 403) {
-        nav("/login", { replace: true });
-      }
     } finally {
       setLoading(false);
     }
@@ -98,15 +83,16 @@ export default function Checkout() {
       <button
         disabled={!items.length || loading}
         onClick={confirmar}
-        className="mt-6 w-full px-4 py-3 rounded-2xl bg-black text-white font-semibold disabled:opacity-50 active:scale-[0.99]"
+        className="mt-6 w-full px-4 py-3 rounded-2xl bg-black text-white dark:bg-white dark:text-black font-semibold disabled:opacity-50"
       >
         {loading ? "Procesando..." : "Confirmar compra"}
       </button>
 
-      <p className="mt-3 text-xs opacity-70">
-        *Si es la primera compra en Render, puede tardar unos segundos en
-        responder.
-      </p>
+      {!isAuthed && (
+        <p className="mt-3 text-sm opacity-70">
+          Para finalizar la compra debes iniciar sesión.
+        </p>
+      )}
     </div>
   );
 }

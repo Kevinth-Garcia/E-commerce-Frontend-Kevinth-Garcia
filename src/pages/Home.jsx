@@ -56,11 +56,11 @@ export default function Home() {
           </div>
 
           {/* IMAGEN */}
-          <div className="hidden md:flex justify-center">
+          <div className="grid md:grid-cols-2 gap-6 items-center">
             <img
               src={Coolmemepng}
               alt="Cool meme"
-              className="w-72 mx-auto animate-float drop-shadow-2xl"
+              className="w-64 sm:w-72 md:w-80 mx-auto animate-float drop-shadow-2xl"
               loading="lazy"
             />
           </div>
@@ -72,9 +72,7 @@ export default function Home() {
         <div className="flex items-end justify-between gap-3">
           <div>
             <h2 className="text-xl font-extrabold">Productos destacados</h2>
-            <p className="text-sm opacity-80">
-              Los mas comprados de este mes.
-            </p>
+            <p className="text-sm opacity-80">Los mas comprados de este mes.</p>
           </div>
 
           <Link

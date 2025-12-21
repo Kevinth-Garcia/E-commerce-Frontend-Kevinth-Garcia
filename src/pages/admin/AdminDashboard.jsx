@@ -1,12 +1,10 @@
 import { Link } from "react-router-dom";
 
-//panel de admin para ver Ordenes, Usuarios, Productos
-
 export default function AdminDashboard() {
   const Card = ({ title, desc, to }) => (
     <Link
       to={to}
-      className="rounded-2xl border p-5 bg-white dark:bg-zinc-900 dark:border-zinc-800 hover:shadow-sm transition"
+      className="rounded-2xl border p-5 bg-white dark:bg-zinc-900 dark:border-zinc-800 hover:shadow-sm transition hover:scale-[1.01] active:scale-95"
     >
       <h3 className="font-bold text-lg">{title}</h3>
       <p className="mt-1 text-sm opacity-80">{desc}</p>

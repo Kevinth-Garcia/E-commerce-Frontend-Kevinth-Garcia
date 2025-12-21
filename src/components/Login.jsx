@@ -47,7 +47,7 @@ export default function Login() {
   };
 
   return (
-    <div className="max-w-md mx-auto rounded-2xl border p-6 dark:border-zinc-800 bg-white dark:bg-zinc-900">
+    <div className="max-w-md mx-auto rounded-2xl border p-6 sm:p-8 dark:border-zinc-800 bg-white dark:bg-zinc-900">
       <h1 className="text-2xl font-bold">Iniciar sesión</h1>
       <p className="mt-1 text-sm opacity-80">
         Accede para comprar y ver tus órdenes.

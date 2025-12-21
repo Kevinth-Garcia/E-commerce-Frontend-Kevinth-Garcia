@@ -2,20 +2,26 @@ import { useEffect, useState } from "react";
 import api from "../../services/api";
 import { toast } from "react-toastify";
 
-//pestaña de gestion de usuarios Admin donde se pueden eliminar usuarios o dar derechos de Admin
+// Pestaña de gestión de usuarios Admin:
+// - listar usuarios
+// - dar/quitar admin
+// - ver si están verificados
+// - eliminar usuario
 
 export default function AdminUsers() {
   const [users, setUsers] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [confirmDelete, setConfirmDelete] = useState(null); // user object
 
   const load = async () => {
     setLoading(true);
     try {
-      const res = await api.get("/users/admin/all"); // ruta
+      // GET /api/users
+      const res = await api.get("/users");
       setUsers(Array.isArray(res.data?.data) ? res.data.data : []);
     } catch (e) {
       toast.error(e?.response?.data?.message || "Error al obtener usuarios");
+      setUsers([]);
     } finally {
       setLoading(false);
     }
@@ -26,13 +32,19 @@ export default function AdminUsers() {
   }, []);
 
   const toggleAdmin = async (u) => {
+    const id = u?._id || u?.id;
+    if (!id) return toast.error("ID de usuario inválido");
+
     try {
       const next = !u.isAdmin;
 
-      const res = await api.put(`/users/${u._id}`, { isAdmin: next }); // PUT
+      // PUT /api/users/:id  body: { isAdmin }
+      const res = await api.put(`/users/${id}`, { isAdmin: next });
       const updated = res.data?.data;
 
-      setUsers((prev) => prev.map((x) => (x._id === u._id ? updated : x)));
+      setUsers((prev) =>
+        prev.map((x) => ((x._id || x.id) === id ? updated : x))
+      );
 
       toast.success(`Permiso admin: ${next ? "ACTIVADO" : "DESACTIVADO"}`);
     } catch (e) {
@@ -46,9 +58,13 @@ export default function AdminUsers() {
   const doDelete = async () => {
     if (!confirmDelete) return;
 
+    const id = confirmDelete?._id || confirmDelete?.id;
+    if (!id) return toast.error("ID de usuario inválido");
+
     try {
-      await api.delete(`/users/${confirmDelete._id}`); // DELETE
-      setUsers((prev) => prev.filter((x) => x._id !== confirmDelete._id));
+      // DELETE /api/users/:id
+      await api.delete(`/users/${id}`);
+      setUsers((prev) => prev.filter((x) => (x._id || x.id) !== id));
       toast.success("Usuario eliminado ✅");
       setConfirmDelete(null);
     } catch (e) {
@@ -59,10 +75,22 @@ export default function AdminUsers() {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between gap-3">
-        <h1 className="text-2xl font-extrabold">Admin · Usuarios</h1>
+        <div>
+          <h1 className="text-2xl font-extrabold">Admin · Usuarios</h1>
+          <p className="text-sm opacity-80">
+            Gestiona usuarios, verificación y permisos.
+          </p>
+        </div>
+
+        <button
+          onClick={load}
+          className="px-4 py-2 rounded-xl border dark:border-zinc-800 hover:bg-gray-50 dark:hover:bg-zinc-900"
+        >
+          Recargar
+        </button>
       </div>
 
-      <div className="rounded-2xl border dark:border-zinc-800 overflow-hidden">
+      <div className="rounded-2xl border dark:border-zinc-800 overflow-hidden bg-white dark:bg-zinc-950">
         <div className="grid grid-cols-12 gap-2 px-4 py-3 text-xs font-semibold bg-gray-50 dark:bg-zinc-900">
           <div className="col-span-5">Usuario</div>
           <div className="col-span-3">Verificado</div>
@@ -72,62 +100,67 @@ export default function AdminUsers() {
         {loading ? (
           <div className="p-4 opacity-80">Cargando...</div>
         ) : users.length ? (
-          users.map((u) => (
-            <div
-              key={u._id}
-              className="grid grid-cols-12 gap-2 px-4 py-3 border-t dark:border-zinc-800 bg-white dark:bg-zinc-950"
-            >
-              <div className="col-span-5">
-                <p className="font-semibold line-clamp-1">
-                  {u.nombre} {u.apellido}
-                </p>
-                <p className="text-xs opacity-70 line-clamp-1">{u.email}</p>
-                {u.isAdmin && (
-                  <span className="inline-flex mt-2 rounded-full px-3 py-1 text-xs border border-indigo-300 bg-indigo-50 text-indigo-700 dark:border-indigo-900 dark:bg-indigo-950/30 dark:text-indigo-200">
-                    Admin
+          users.map((u) => {
+            const id = u._id || u.id;
+
+            return (
+              <div
+                key={id}
+                className="grid grid-cols-1 sm:grid-cols-12 gap-2 px-4 py-3 border-t dark:border-zinc-800 bg-white dark:bg-zinc-950"
+              >
+                <div className="col-span-1 sm:col-span-3">
+                  <p className="font-semibold line-clamp-1">
+                    {u.nombre} {u.apellido}
+                  </p>
+                  <p className="text-xs opacity-70 line-clamp-1">{u.email}</p>
+
+                  {u.isAdmin && (
+                    <span className="inline-flex mt-2 rounded-full px-3 py-1 text-xs border border-indigo-300 bg-indigo-50 text-indigo-700 dark:border-indigo-900 dark:bg-indigo-950/30 dark:text-indigo-200">
+                      Admin
+                    </span>
+                  )}
+                </div>
+
+                <div className="col-span-1 sm:col-span-4 flex flex-wrap justify-end gap-2">
+                  <span
+                    className={`inline-flex rounded-full px-3 py-1 text-xs border ${
+                      u.isEmailVerified
+                        ? "border-emerald-300 bg-emerald-50 text-emerald-700 dark:border-emerald-900 dark:bg-emerald-950/30 dark:text-emerald-200"
+                        : "border-amber-300 bg-amber-50 text-amber-700 dark:border-amber-900 dark:bg-amber-950/30 dark:text-amber-200"
+                    }`}
+                  >
+                    {u.isEmailVerified ? "Sí" : "No"}
                   </span>
-                )}
-              </div>
+                </div>
 
-              <div className="col-span-3">
-                <span
-                  className={`inline-flex rounded-full px-3 py-1 text-xs border ${
-                    u.isEmailVerified
-                      ? "border-emerald-300 bg-emerald-50 text-emerald-700 dark:border-emerald-900 dark:bg-emerald-950/30 dark:text-emerald-200"
-                      : "border-amber-300 bg-amber-50 text-amber-700 dark:border-amber-900 dark:bg-amber-950/30 dark:text-amber-200"
-                  }`}
-                >
-                  {u.isEmailVerified ? "Sí" : "No"}
-                </span>
-              </div>
+                <div className="col-span-4 flex justify-end gap-2">
+                  <button
+                    onClick={() => toggleAdmin(u)}
+                    className={`px-3 py-1.5 rounded-xl border transition ${
+                      u.isAdmin
+                        ? "border-red-600 text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30"
+                        : "border-emerald-600 text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-950/30"
+                    }`}
+                  >
+                    {u.isAdmin ? "Quitar Admin" : "Hacer Admin"}
+                  </button>
 
-              <div className="col-span-4 flex justify-end gap-2">
-                <button
-                  onClick={() => toggleAdmin(u)}
-                  className={`px-3 py-1.5 rounded-xl border transition ${
-                    u.isAdmin
-                      ? "border-red-600 text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30"
-                      : "border-emerald-600 text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-950/30"
-                  }`}
-                >
-                  {u.isAdmin ? "Quitar Admin" : "Hacer Admin"}
-                </button>
-
-                <button
-                  onClick={() => askDelete(u)}
-                  className="px-3 py-1.5 rounded-xl border border-red-600 text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30"
-                >
-                  Eliminar
-                </button>
+                  <button
+                    onClick={() => askDelete(u)}
+                    className="px-3 py-1.5 rounded-xl border border-red-600 text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30"
+                  >
+                    Eliminar
+                  </button>
+                </div>
               </div>
-            </div>
-          ))
+            );
+          })
         ) : (
           <div className="p-4 opacity-80">No hay usuarios.</div>
         )}
       </div>
 
-      {/* Confirmación de eliminar (dentro de la página, no alert) */}
+      {/* Confirmación de eliminar (dentro de la página) */}
       {confirmDelete && (
         <div className="rounded-2xl border border-red-200 bg-red-50 p-4 dark:border-red-900 dark:bg-red-950/30">
           <p className="text-sm">
