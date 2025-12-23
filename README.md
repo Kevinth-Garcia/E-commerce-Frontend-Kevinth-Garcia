@@ -1,5 +1,7 @@
 # 🛒 Frontend – Friki Mundo
 
+https://e-commerce-frontend-kevinth-garcia.vercel.app
+
 Frontend desarrollado como parte del **Trabajo Final Integrador** del Bootcamp **Full Stack Engineer**, utilizando **React** y **Vite**, conectado a un backend en **Node.js + Express + MongoDB** (MERN), implementando carrito persistente, autenticación, rutas protegidas, panel de administración y checkout funcional.
 
 ---
